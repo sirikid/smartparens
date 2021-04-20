@@ -3059,6 +3059,9 @@ value is used instead of a test."
              (re (-concat (car specsplit) (if (cadr specsplit) (cdr specsplit) nil))))
         (cons 'progn (if after (-snoc re after) re))))))
 
+;; for byte-compiler
+(defvar skeleton-end-newline)
+
 (defun sp--run-function-or-insertion (fun id action context)
   "Run a function or insertion.
 
@@ -3070,8 +3073,9 @@ see `sp-pair' for description."
   (cond
    ((functionp fun)
     (funcall fun id action context))
-   ((stringp fun)
-    (eval (sp--parse-insertion-spec fun)))))
+   ((listp fun)
+    (let (skeleton-end-newline)
+      (skeleton-insert fun)))))
 
 
 (defvar sp-handler-context nil

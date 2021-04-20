@@ -44,9 +44,9 @@
 (define-key smartparens-strict-mode-map [remap c-electric-backspace] 'sp-backward-delete-char)
 
 (sp-with-modes sp-c-modes
-  (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
-  (sp-local-pair "/*" "*/" :post-handlers '(("| " "SPC")
-                                            ("* ||\n[i]" "RET"))))
+  (sp-local-pair "{" nil :post-handlers '(((nil _ \n >) "RET")))
+  (sp-local-pair "/*" "*/" :post-handlers '(((nil _ " ") "SPC")
+                                            ((nil "* " _ \n >) "RET"))))
 
 (provide 'smartparens-c)
 ;;; smartparens-c.el ends here

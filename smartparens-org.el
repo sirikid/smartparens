@@ -63,9 +63,9 @@ This predicate is only tested on \"insert\" action."
                  :unless '(sp-point-after-word-p sp-point-at-bol-p)
                  :skip-match 'sp--org-skip-asterisk)
   (sp-local-pair "_" "_" :unless '(sp-point-after-word-p))
-  (sp-local-pair "/" "/" :unless '(sp-point-after-word-p sp-org-point-after-left-square-bracket-p) :post-handlers '(("[d1]" "SPC")))
-  (sp-local-pair "~" "~" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
-  (sp-local-pair "=" "=" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
+  (sp-local-pair "/" "/" :unless '(sp-point-after-word-p sp-org-point-after-left-square-bracket-p) :post-handlers '(((nil (delete-char 1)) "SPC")))
+  (sp-local-pair "~" "~" :unless '(sp-point-after-word-p) :post-handlers '(((nil (delete-char 1)) "SPC")))
+  (sp-local-pair "=" "=" :unless '(sp-point-after-word-p) :post-handlers '(((nil (delete-char 1)) "SPC")))
   (sp-local-pair "«" "»"))
 
 (provide 'smartparens-org)

@@ -68,12 +68,12 @@
         (indent-region beg end)))))
 
 (sp-local-pair 'scala-mode "(" nil
-               :post-handlers '(("||\n[i]" "RET")
-                                ("| " "SPC")))
+               :post-handlers '(((nil _ \n >) "RET")
+                                ((nil _ " ") "SPC")))
 
 (sp-local-pair 'scala-mode "{" nil
-               :post-handlers '(("||\n[i]" "RET")
-                                ("| " "SPC")
+               :post-handlers '(((nil (open-line 1) > _) "RET")
+                                ((nil _ " ") "SPC")
                                 sp-scala-wrap-with-indented-newlines))
 
 (provide 'smartparens-scala)

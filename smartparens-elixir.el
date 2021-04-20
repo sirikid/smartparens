@@ -162,7 +162,7 @@ ID, ACTION, CONTEXT."
                  :unless '(sp-in-comment-p sp-in-string-p))
   (sp-local-pair "fn" "end"
                  :when '(("SPC" "RET" "<evil-ret>"))
-                 :post-handlers '("| "))
+                 :post-handlers '((nil _ " ")))
   (sp-local-pair "if" "end"
                  :when '(("SPC" "RET" "<evil-ret>"))
                  :post-handlers '(sp-elixir-do-block-post-handler)

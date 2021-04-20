@@ -56,7 +56,7 @@
 (sp-with-modes 'rst-mode
   (sp-local-pair "*" "*"
                  :unless '(sp--gfm-point-after-word-p sp-point-at-bol-p)
-                 :post-handlers '(("[d1]" "SPC"))
+                 :post-handlers '(((nil (delete-char 1)) "SPC"))
                  :skip-match 'sp--gfm-skip-asterisk)
   (sp-local-pair "**" "**")
   (sp-local-pair "_" "_" :unless '(sp-point-after-word-p sp-rst-point-after-backtick))
