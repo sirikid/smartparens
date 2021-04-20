@@ -3013,52 +3013,6 @@ value is used instead of a test."
      ((or in-comment (sp-point-in-comment)) 'comment)
      (t 'code))))
 
-(defun sp--parse-insertion-spec (fun)
-  "Parse the insertion specification FUN and return a form to evaluate."
-  (let ((spec nil)
-        (after nil)
-        (last 1))
-    (cl-labels ((push-non-empty
-                 (what)
-                 (unless (equal (cadr what) "")
-                   (push what spec))))
-      (with-temp-buffer
-        (insert fun)
-        (goto-char (point-min))
-        (while (re-search-forward "\\(|\\|\\[\\)" nil t)
-          (cond
-           ((equal (match-string 0) "[")
-            (if (save-excursion (backward-char 1) (eq (preceding-char) 92))
-                (push-non-empty `(insert ,(concat (buffer-substring-no-properties last (- (point) 2)) "[")))
-              (push-non-empty `(insert ,(buffer-substring-no-properties last (1- (point)))))
-              (let* ((p (point))
-                     (fun-end (progn
-                                (re-search-forward "]" nil t)
-                                (1- (point))))
-                     (fun-spec (buffer-substring-no-properties p fun-end))
-                     (instruction (cond
-                                   ((equal fun-spec "i")
-                                    '(indent-according-to-mode))
-                                   ((equal (aref fun-spec 0) ?d)
-                                    `(delete-char ,(string-to-number (substring fun-spec 1)))))))
-                (when instruction (push instruction spec)))))
-           ((equal (match-string 0) "|")
-            (cond
-             ((save-excursion (backward-char 1) (eq (preceding-char) 92))
-              (push-non-empty `(insert ,(concat (buffer-substring-no-properties last (- (point) 2)) "|"))))
-             (t
-              (push-non-empty `(insert ,(buffer-substring-no-properties last (1- (point)))))
-              (push 'save-excursion spec)
-              (when (eq (following-char) 124)
-                (forward-char 1)
-                (setq after '(indent-according-to-mode)))))))
-          (setq last (point)))
-        (push-non-empty `(insert ,(buffer-substring-no-properties last (point-max)))))
-      (let* ((specr (nreverse spec))
-             (specsplit (--split-with (not (eq it 'save-excursion)) specr))
-             (re (-concat (car specsplit) (if (cadr specsplit) (cdr specsplit) nil))))
-        (cons 'progn (if after (-snoc re after) re))))))
-
 ;; for byte-compiler
 (defvar skeleton-end-newline)
 
