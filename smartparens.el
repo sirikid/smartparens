@@ -3016,21 +3016,18 @@ value is used instead of a test."
 ;; for byte-compiler
 (defvar skeleton-end-newline)
 
-(defun sp--run-function-or-insertion (fun id action context)
-  "Run a function or insertion.
+(defun sp--run-handler (handler id action context)
+  "Run handler.
 
-If FUN is a function, call it with `funcall' with ID, ACTION and
-CONTEXT as arguments.
+If HANDLER is a function call it with ID, ACTION and CONTEXT as
+arguments.
 
-If FUN is a string, interpret it as \"insertion specification\",
-see `sp-pair' for description."
-  (cond
-   ((functionp fun)
-    (funcall fun id action context))
-   ((listp fun)
-    (let (skeleton-end-newline)
-      (skeleton-insert fun)))))
-
+If FUN is a list, interpret it as skeleton."
+  (cond ((functionp handler)
+         (funcall handler id action context))
+        ((listp handler)
+         (let (skeleton-end-newline)
+           (skeleton-insert handler)))))
 
 (defvar sp-handler-context nil
   "Special variable holding context during handler execution.")
@@ -3049,7 +3046,8 @@ this value during execution of the handler."
           (context (sp--get-handler-context type)))
       (if hook
           (let ((sp-handler-context context-values))
-            (--each hook (sp--run-function-or-insertion it id action context)))
+            (--each hook
+              (sp--run-handler it id action context)))
         (run-hook-with-args 'tag-hook id action context)))))
 
 ;; TODO: add a test for a symbol property that would tell this handler
@@ -3083,13 +3081,14 @@ this value during execution of the handler."
           (let* ((pair (cdr (sp-state-delayed-hook sp-state)))
                  (hooks (sp-get-pair pair :post-handlers-cond)))
             (--each hooks
-              (let ((fun (car it))
+              (let ((handler (car it))
                     (conds (cdr it)))
                 (when (or (--any? (eq this-command it) conds)
                           (--any? (equal (single-key-description last-command-event) it) conds))
-                  (sp--run-function-or-insertion
-                   fun pair 'insert
-                   (sp--get-handler-context :post-handlers)))))
+                  (sp--run-handler handler
+                                   pair
+                                   'insert
+                                   (sp--get-handler-context :post-handlers)))))
             (setf (sp-state-delayed-hook sp-state) nil)
             (setq sp-last-inserted-pair nil))))
 
